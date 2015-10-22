@@ -19,7 +19,7 @@ void setup() {
 }
 
 void draw() {
-  background(writing?0:brightness,writing?brightness:0,0);
+  background(writing?0:brightness,writing?brightness*3:0,0);
   if(setup) {
     brightness += pulsing;
     if(brightness > 32)
@@ -42,7 +42,7 @@ void draw() {
   }
   textSize(10);
 //  text("Writing to <sketch>/temperatures.csv", 400, 468);
-  text("Writing to /Documents/Processing/Firefly/temperatures.csv", 300, 468);
+  text("Writing to <MSP430-DAQ>/WinFirefly/Firefly/temperatures.csv", 300, 468);
 }
 
 void serialEvent (Serial port) {
