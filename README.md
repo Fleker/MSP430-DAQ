@@ -1,6 +1,8 @@
 # MSP430-DAQ
 Record data to MSP430 flash and automatically download to CSV
 
+<img src='http://i138.photobucket.com/albums/q267/Bantoregion/logo_transparent_zpshawdeon3.png'>
+
 ## Requirements
 There are two pieces of software:
 * MSP430 code that sends data over USB-Serial using the standard `Serial.print` commands
