@@ -41,6 +41,9 @@ improper new lines or commas will mess up your data.
 * The USB-serial connection is currently being done with the MSP430G2553 on the TI Launchpad MSP-EXP430G2 Rev 1.5.
 * All of the jumpers on J3 are crossing the RXD/TXD divide
 
+## MSP430Flash
+The "MSP430Flash" program uses the <a href='https://github.com/energia/Energia/tree/master/hardware/msp430/libraries/MspFlash'>MspFlash library for Energia</a> which will saves information to the device's flash so that data does not have to be read in realtime.
+
 ## Demo
 This crude video demonstrates the workflow.
 
