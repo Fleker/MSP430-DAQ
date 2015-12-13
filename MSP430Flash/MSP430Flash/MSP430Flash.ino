@@ -9,7 +9,7 @@
 #define flash SEGMENT_D
 int flashOffset = 0;
 //
-int FIREFLY = 1;
+int FIREFLY = 0;
 unsigned char cr = 13;
 unsigned char* carriageReturn = &cr;
 
@@ -126,6 +126,7 @@ void doErase()
 {
  Serial.println("Erase"); 
  Flash.erase(flash); 
+ flashOffset = 0;
  Serial.println("Done."); 
 }
 
@@ -163,3 +164,4 @@ void doHelp()
   Serial.println(F_CPU);
   Serial.println(div); 
 }
+
