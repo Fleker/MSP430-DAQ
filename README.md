@@ -72,6 +72,18 @@ The only software necessary on will be the MSP430 code, which should be modified
 
 However, you will need additional hardware support for this system to work. 
 
+### Hardware
+The MSP430 can interface with an SD card using the SPI (Serial Peripheral Interface) protocol. The pinouts are shown below for both a Micro SD or a standard size SD card.
+
+| MSP430 | Micro SD | Standard SD |
+| :---   | :---     | :---        |
+| CS 1.4 | Pin 2    | Pin 1       |
+| Din 1.7| Pin 3    | Pin 2       |
+| CLK 1.5| Pin 5    | Pin 5       |
+| Dout 1.6|Pin 7    | Pin 6       |
+| VCC    | Pin 4    | Pin 4       |
+| GND    | Pin 6    | Pins 3 & 6  |
+
 ### Customization
 There are a few key areas where you can modify code for your needs without affecting the rest of the system.
 
