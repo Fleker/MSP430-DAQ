@@ -31,19 +31,26 @@ DIR dir;				/* Directory object */
 FILINFO fno;			/* File information object */
 
 uint32_t ui32_ReadTemp = 0;
+uint32_t ui32_Barometer = 0;
 uint8_t StringLength = 0;
 char buf[30];
 uint32_t counter = 0;
 uint32_t AccStringLength = 0;
+uint32_t lastWrite = 0;
+int WRITE_SPEED = 1000; //Write once for second / once per 1000 ms
 
 void setup() {
     Serial.begin(4800);                // initialize the serial terminal
     Serial.println("setup()");
+    lastWrite = millis(); //We keep storing the lastWrite time for asynchronous SD writing
     setup2();
 }
 void loop() {
   Serial.println("Hi eli");
-  loop2();
+  if(millis() - lastWrite > WRITE_SPEED) {
+    lastWrite = millis();
+    write();
+  }
   delay(500); 
 }
 void setup2()
@@ -53,15 +60,16 @@ void setup2()
    analogReference(INTERNAL1V5);
    analogRead(TEMPSENSOR);           // first reading usually wrong
    FatFs.begin(cs_pin, 3);              // initialize FatFS library calls
-   Serial.print("\n\n\n MSP430 Temperature Logger \n\r"); 
-   Serial.println("Press S2 button to start...");
-   while(digitalRead(PUSH2)==1){}
-   delay(100);
-   while(digitalRead(PUSH2)==0){}
+   Serial.print("**********\r\n MSP430 Temperature Logger \n\r**********\n\r\n\r");
 }
          
-/* Stop with dying message */         
-void die ( int pff_err	)
+/* Stop with dying message */    
+void die(int pff_err) {
+  Serial.print("Failed with rc=");
+  Serial.print(pff_err,DEC);
+  Serial.println(" but we keep going");
+}
+void die2 ( int pff_err	)
 {
    Serial.println();
    Serial.print("Failed with rc=");
@@ -79,42 +87,33 @@ void printDec(uint32_t ui)
 /*-----------------------------------------------------------------------*/
 /* Program Main                                                          */
 /*-----------------------------------------------------------------------*/
-void loop2()
-{
-   #if 0
-   Serial.println();
-   Serial.println("Press button to start...");
-   while(digitalRead(PUSH2)==1){}
-   delay(100);
-   while(digitalRead(PUSH2)==0){}
-   #endif
-
+void write() {
+  //Grab our sensors data
    ui32_ReadTemp = ((uint32_t)analogRead(TEMPSENSOR)*27069 - 18169625) *10 >> 16;
+   ui32_Barometer = ((uint32_t) 3);
+   Serial.print(ui32_ReadTemp);
 
-   if(true) {
    Serial.println();
    Serial.println("Opening log file to write temperature(LOG.txt).");
    delay(100);
-   }
    
    rc = FatFs.open("LOG.TXT");
    if (rc) die(rc);
 
    delay(100);
    bw=0;
-   ui32_ReadTemp = ((uint32_t)analogRead(TEMPSENSOR)*27069 - 18169625) *10 >> 16;
-   sprintf( buf, "%lu Current temperature is %lu.%lu\r\n", counter, ui32_ReadTemp/10, ui32_ReadTemp%10 );
+   //sprintf( buf, "%lu Current temperature is %lu.%lu\r\n", counter, ui32_ReadTemp/10, ui32_ReadTemp%10 );
+   //buf = String(counter) + "," + String(ui32_ReadTemp/10)+ "." + String(ui32_ReadTemp%10) + ",0\r\n";
+   //sprintf(buf, "%1u,%1u.%1u,%1u\r\n", counter, ui32_ReadTemp/10, ui32_ReadTemp%10, 0);
+   sprintf(buf, "%lu,%lu.%lu,%lu\r\n", counter, ui32_ReadTemp/10, ui32_ReadTemp%10, ui32_Barometer);
    counter++;
    StringLength =  strlen(buf);
    Serial.println(buf);        
 
-   if(true) {
-   Serial.print(StringLength, DEC);
-   Serial.println();
-   Serial.print(AccStringLength, DEC);
-   }
+   //Serial.println(StringLength, DEC);
+   //Serial.println(AccStringLength, DEC);
 
-   rc = FatFs.lseek(  AccStringLength );
+   rc = FatFs.lseek(AccStringLength);
    if (rc) die(rc);
    AccStringLength =  AccStringLength + 512;
    rc = FatFs.write(buf, StringLength,&bw);
@@ -124,28 +123,8 @@ void loop2()
    rc = FatFs.close();  //Close file
         if (rc) die(rc);
 
-       
-   #if READ         
-   delay(100);
-   Serial.println();
-   Serial.println("Read Temp data from the log file (LOG.txt).");
-   delay(100);
-   rc = FatFs.open("LOG.TXT");
-   if (rc) die(rc);
-
-   delay(100);
-   for (;;) {
-   rc = FatFs.read(buffer, sizeof(buffer), &br);	/* Read a chunk of file */
-   if (rc || !br) break;			/* Error or end of file */
-   for (uint16_t i = 0; i < br; i++)		/* Type the data */
-   Serial.print(buffer[i]);
-   delay(100);
-   }
-   if (rc) die(rc);
-   #endif
-
    // Log delay
-   delay(LOG_DELAY);
+   //delay(LOG_DELAY);
 }
 
 
